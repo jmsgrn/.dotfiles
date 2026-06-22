@@ -43,6 +43,12 @@
   amend = commit --amend --no-edit
   unstage = restore --staged
   graph = log --oneline --graph --decorate --all
+  undo    = reset --soft HEAD~1
+  please  = push --force-with-lease
+  wip     = !git add -A && git commit -m 'wip' --no-verify
+  recent  = for-each-ref --sort=-committerdate --count=15 --format='%(refname:short)'
+  cleanup = !git branch --merged main | grep -v '\\*\\|main' | xargs -r git branch -d
+  aliases = config --get-regexp ^alias\\.
 
 # Use the `gh` CLI as the credential helper for github.com and gist.github.com.
 # Empty `helper =` first clears any inherited helpers; second line installs gh.
