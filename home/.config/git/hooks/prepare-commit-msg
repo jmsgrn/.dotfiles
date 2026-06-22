@@ -1,0 +1,48 @@
+#!/bin/sh
+# Global prepare-commit-msg hook.
+#
+# 1. Chains to a repo-local prepare-commit-msg hook if one exists (because a
+#    global core.hooksPath would otherwise bypass per-repo .git/hooks).
+# 2. Strips AI-tool attribution that harnesses inject on their own
+#    ("Co-authored-by: Claude ...", "Generated with Claude Code"), so the
+#    author's own trailer is the single source of attribution.
+# 3. Appends a standard attribution trailer to every commit message, noting the
+#    work was AI-assisted but reviewed and understood by the author.
+#
+# Installed via: git config --global core.hooksPath ~/.config/git/hooks
+
+msg_file="$1"
+src="$2"
+
+# Don't touch generated merge/squash messages.
+case "$src" in
+  merge|squash) exit 0 ;;
+esac
+
+# Run any repo-local hook so we don't silently disable existing project hooks.
+repo_hooks="$(git rev-parse --git-path hooks 2>/dev/null)"
+local_hook="$repo_hooks/prepare-commit-msg"
+if [ -x "$local_hook" ] && ! [ "$local_hook" -ef "$0" ]; then
+  "$local_hook" "$@" || exit $?
+fi
+
+# Strip tool-injected AI attribution before we add our own, so the only
+# attribution on the commit is the author's trailer below. Matches are
+# case-insensitive and only target Claude/Anthropic + "Generated with Claude
+# Code" footers - human "Co-authored-by:" lines are left untouched. Git's own
+# message cleanup collapses any blank line the deletion leaves behind.
+if [ -s "$msg_file" ]; then
+  tmp="$(mktemp)"
+  sed -E \
+    -e '/^[[:space:]]*Co-authored-by:.*(claude|anthropic)/Id' \
+    -e '/Generated with \[?Claude Code\]?/Id' \
+    -e '/🤖 Generated with/Id' \
+    "$msg_file" > "$tmp" && mv "$tmp" "$msg_file"
+fi
+
+trailer="This code was AI-generated/assisted, but has been reviewed and is fully understood by the author."
+
+# Append once (skip if it's already there, e.g. on --amend).
+if ! grep -qF "$trailer" "$msg_file"; then
+  printf '\n%s\n' "$trailer" >> "$msg_file"
+fi

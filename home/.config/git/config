@@ -19,6 +19,7 @@
 [core]
   editor = code --wait
   excludesfile = ~/.config/git/ignore
+	hooksPath = ~/.config/git/hooks
 
 [diff]
   algorithm = histogram
