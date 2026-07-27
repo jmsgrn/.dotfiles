@@ -101,6 +101,7 @@ dot remove ripgrep
 - **Modern CLI tools** - `zoxide` (smart cd), `fzf` (fuzzy finder), `bat` (cat with colors), `eza` (modern ls), `fd` (modern find), `ripgrep`
 - **Git** - sensible defaults at `$XDG_CONFIG_HOME/git/config`, global gitignore at `$XDG_CONFIG_HOME/git/ignore`. Identity is kept in untracked `~/.config/git/config.local` (created by `dot init`).
 - **VS Code** - settings, keybindings, and an `extensions.txt` that gets auto-installed
+- **Claude Code** - `settings.json` (model, effort, theme) plus a two-line `statusline.sh`: model · git branch · dir · context meter, and your most recent prompt underneath. Only those two files are tracked under `home/.claude/`; credentials, transcripts, and plugin state stay in the untracked `~/.claude` — you just `claude` log in per machine.
 
 ## Layout
 
@@ -125,6 +126,7 @@ GNU Stow mirrors everything under `home/` into `$HOME` (folding directories as n
 ├── assets/                   # fonts + wallpapers (installed by `dot init`, not stowed)
 └── home/                     # the Stow package — mirrors $HOME
     ├── .zshenv               # sets ZDOTDIR, then sources $ZDOTDIR/.zshenv
+    ├── .claude/              # settings.json + statusline.sh (creds/transcripts stay untracked)
     └── .config/
         ├── zsh/              # .zshenv (env/PATH), .zshrc, .zsh_plugins.txt, aliases/functions/exports/tools.zsh
         ├── git/             # config, ignore (identity in untracked config.local)

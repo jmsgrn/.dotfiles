@@ -23,8 +23,9 @@ home/.config/zsh/.zsh_plugins.zsh
 *.swp
 
 # Claude Code per-project settings - auto-created when permissions are approved
-# in this directory. Local-only, never meant to ship.
-.claude/
+# in this directory. Local-only, never meant to ship. Anchored to the repo root
+# so it does NOT swallow the tracked global config under home/.claude/.
+/.claude/
 
 # machine-local + runtime (path-independent, robust to layout changes)
 local.zsh
