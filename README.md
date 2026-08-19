@@ -35,6 +35,25 @@ You can clone elsewhere, but then pre-export `DOTFILES` and Stow needs an explic
 
 `dot init` detects the OS, installs everything in the package manifest (`bin/packages/*.txt`), then symlinks all configs with GNU Stow. Existing config is tarballed to `~/.dotfiles-backup/dotfiles_backup_<timestamp>.tar.gz` first. Safe to re-run.
 
+### Claude Code skills
+
+Global skills live in their own repo (`~/projects/skills`) rather than in this one, so
+they can be published separately. `dot init` wires them up, or run it on its own:
+
+```sh
+dot skills
+```
+
+That clones the skills repo if it's missing and symlinks `~/.claude/skills` to it.
+If that path is already a real directory holding machine-local skills, it is moved to
+`~/.claude/skills.local-<timestamp>` first - nothing is deleted, but you'll need to
+merge anything you want to keep into the repo by hand.
+
+Point it somewhere else with `SKILLS_REPO=<url> dot skills`.
+
+Project-specific skills are not managed here. They belong in their own repo under
+`<repo>/.claude/skills/` and arrive when you clone it.
+
 ### After install: log out and back in
 
 `dot init` switches your login shell to zsh via `usermod`, but `$SHELL` in your current desktop session was set at login and won't update until you log out and back in (or reboot). Until then, new terminals will still inherit `$SHELL=/bin/bash` even though they actually run zsh.

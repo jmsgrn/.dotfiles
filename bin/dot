@@ -16,6 +16,7 @@
 #   unlink               remove our symlinks
 #   backup               tar files stow would conflict with into ~/.dotfiles-backup/
 #   clean                remove broken symlinks pointing into $DOTFILES
+#   skills               clone + link the Claude Code skills repo
 #   doctor               health check
 #   help                 show this help
 
@@ -33,6 +34,8 @@ source "$SCRIPT_DIR/lib/packages.sh"
 source "$SCRIPT_DIR/lib/bootstrap.sh"
 
 PKG="home"   # the Stow package: $DOTFILES/home/ mirrors $HOME
+
+short() { printf '%s' "${1/#$HOME/~}"; }
 
 require_stow() {
   command -v stow >/dev/null 2>&1 && return 0
@@ -59,6 +62,7 @@ usage() {
     unlink                remove our symlinks
     backup                tar conflicting files into ~/.dotfiles-backup/
     clean                 remove broken symlinks pointing into \$DOTFILES
+    skills                clone + link the Claude Code skills repo into ~/.claude/skills
 
   Maintenance
     doctor                health check
@@ -101,6 +105,49 @@ cmd_link() {
 }
 
 cmd_unlink() { require_stow; info "Unstowing home/"; stow -D -v -d "$DOTFILES" -t "$HOME" "$PKG"; ok "Unlinked."; }
+
+# ----------------------------------------------------------------------------- skills
+# Claude Code reads global skills from ~/.claude/skills. They live in their own
+# repo rather than in this one so they can be published independently; this just
+# clones and links them. Re-runnable.
+SKILLS_REPO="${SKILLS_REPO:-https://gitea.greenworks.dev/jgreen/skills.git}"
+SKILLS_DIR="${SKILLS_DIR:-$HOME/projects/skills}"
+
+cmd_skills() {
+  local link="$HOME/.claude/skills"
+
+  if [[ -d "$SKILLS_DIR/.git" ]]; then
+    info "Updating $(short "$SKILLS_DIR")"
+    git -C "$SKILLS_DIR" pull --ff-only --quiet || warn "could not pull skills (offline or dirty)"
+  elif [[ -e "$SKILLS_DIR" ]]; then
+    err "$SKILLS_DIR exists but is not a git repo. Move it aside and re-run."
+    return 1
+  else
+    info "Cloning skills into $(short "$SKILLS_DIR")"
+    mkdir -p "$(dirname "$SKILLS_DIR")"
+    git clone --quiet "$SKILLS_REPO" "$SKILLS_DIR" || { err "clone failed: $SKILLS_REPO"; return 1; }
+  fi
+
+  mkdir -p "$HOME/.claude"
+
+  if [[ -L "$link" ]]; then
+    local current; current="$(readlink -f "$link" 2>/dev/null || true)"
+    if [[ "$current" == "$(readlink -f "$SKILLS_DIR")" ]]; then
+      ok "~/.claude/skills already linked"
+      return 0
+    fi
+    rm "$link"; warn "replaced a symlink pointing elsewhere"
+  elif [[ -d "$link" ]]; then
+    # A real directory here means this machine accumulated local-only skills.
+    # Never delete them: park them next to the repo so they can be merged by hand.
+    local parked="$HOME/.claude/skills.local-$(date +%Y%m%d-%H%M%S)"
+    mv "$link" "$parked"
+    warn "moved existing ~/.claude/skills to $(short "$parked") - merge anything you want to keep"
+  fi
+
+  ln -s "$SKILLS_DIR" "$link"
+  ok "Linked ~/.claude/skills -> $(short "$SKILLS_DIR")"
+}
 
 cmd_clean() {
   local removed=0 root link target
@@ -202,6 +249,7 @@ cmd_init() {
   info "Linking config (replacing any non-symlink originals)..."; cmd_link --force
   install_antidote
   setup_local_files
+  cmd_skills || warn "skills setup skipped"
   setup_vscode
   install_fonts
   install_wezterm_windows_stub
@@ -260,6 +308,7 @@ main() {
     unlink)          cmd_unlink ;;
     backup)          cmd_backup ;;
     clean)           cmd_clean ;;
+    skills)          cmd_skills ;;
     doctor)          cmd_doctor ;;
     help|-h|--help)  usage ;;
     *) err "Unknown command: $cmd"; usage; exit 1 ;;
