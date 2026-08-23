@@ -2,7 +2,6 @@
 # Note: on Debian `bat` is `batcat` and `fd-find` is `fdfind` (both aliased in aliases.zsh).
 # `dot add` appends here on Linux/WSL.
 zsh
-tmux
 git
 stow
 fzf

@@ -1,6 +1,6 @@
 # .dotfiles
 
-My personal cross-platform config - WezTerm, zsh, tmux, Starship, Git, VS Code. Same setup on macOS, Linux, and WSL.
+My personal cross-platform config - WezTerm, zsh, Starship, Git, VS Code. Same setup on macOS, Linux, and WSL.
 
 ## Install
 
@@ -116,7 +116,6 @@ dot remove ripgrep
 - **WezTerm** - cross-platform GPU terminal, single Lua config
 - **zsh + antidote** - fast plugin loading, OMZ plugins without the framework. Config lives under `$XDG_CONFIG_HOME/zsh/` via `ZDOTDIR`; the only thing in `$HOME` is `~/.zshenv`, which sets `ZDOTDIR` and sources the env file there.
 - **Starship** - cross-shell prompt
-- **tmux** - persistent sessions with vim-style splits and the Primeagen `tmux-sessionizer`. Config at `$XDG_CONFIG_HOME/tmux/tmux.conf` (tmux 3.1+).
 - **Modern CLI tools** - `zoxide` (smart cd), `fzf` (fuzzy finder), `bat` (cat with colors), `eza` (modern ls), `fd` (modern find), `ripgrep`
 - **Git** - sensible defaults at `$XDG_CONFIG_HOME/git/config`, global gitignore at `$XDG_CONFIG_HOME/git/ignore`. Identity is kept in untracked `~/.config/git/config.local` (created by `dot init`).
 - **VS Code** - settings, keybindings, and an `extensions.txt` that gets auto-installed
@@ -141,7 +140,6 @@ GNU Stow mirrors everything under `home/` into `$HOME` (folding directories as n
 │   │   ├── brew-cask.txt     # macOS: brew install --cask
 │   │   ├── apt.txt           # Linux/WSL: apt-get install
 │   │   └── curl.txt          # custom installers (starship, eza, nvm, pi, …)
-│   └── tmux-sessionizer
 ├── assets/                   # fonts + wallpapers (installed by `dot init`, not stowed)
 └── home/                     # the Stow package — mirrors $HOME
     ├── .zshenv               # sets ZDOTDIR, then sources $ZDOTDIR/.zshenv
@@ -149,7 +147,6 @@ GNU Stow mirrors everything under `home/` into `$HOME` (folding directories as n
     └── .config/
         ├── zsh/              # .zshenv (env/PATH), .zshrc, .zsh_plugins.txt, aliases/functions/exports/tools.zsh
         ├── git/             # config, ignore (identity in untracked config.local)
-        ├── tmux/            # tmux.conf
         ├── wezterm/         # wezterm.lua
         ├── starship/        # starship.toml (STARSHIP_CONFIG points here)
         └── Code/User/       # settings.json, keybindings.json, extensions.txt
@@ -188,29 +185,6 @@ Start typing a command then press `Up` / `Down` - filters history to commands th
 | `cat <file>` | `bat` with syntax highlighting |
 | `fd <pat>` | works whether the binary is `fd` or `fdfind` (Ubuntu) |
 | `man <cmd>` | uses `bat` as the pager - colored, syntax-highlighted man pages |
-
-### tmux (prefix = `Ctrl-Space`)
-
-| Key | Action |
-|---|---|
-| `prefix` `\|` | split pane vertically (keeps current dir) |
-| `prefix` `-` | split pane horizontally (keeps current dir) |
-| `prefix` `c` | new window |
-| `prefix` `d` | detach (session keeps running) |
-| `prefix` `h/j/k/l` | navigate panes vim-style |
-| `prefix` `H/J/K/L` | resize panes (hold and repeat) |
-| `prefix` `r` | reload `.tmux.conf` |
-| `prefix` `[` | enter copy mode (vim keys: `v` select, `y` yank) |
-| `tmux a` | attach to last session |
-| `tmux ls` | list sessions |
-
-### tmux-sessionizer (Primeagen pattern)
-
-Fuzzy-find a project directory and either create-or-attach a tmux session named after it. Bound to a global key.
-
-```sh
-bindkey -s '^f' '^utmux-sessionizer\n'   # Ctrl-f
-```
 
 ### zsh aliases
 
