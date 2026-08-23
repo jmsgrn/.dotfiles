@@ -8,8 +8,11 @@ local config = wezterm.config_builder()
 config.color_scheme = 'Tokyo Night'
 -- Cascadia Code matches the Windows Terminal default - installed by install.sh
 -- from assets/fonts/cascadia-code/ so it's reproducible on every machine.
+-- Symbols Nerd Font Mono fills in the Nerd Font glyphs (eza --icons, etc)
+-- that Cascadia doesn't cover; shipped from assets/fonts/symbols-nerd-font/.
 config.font = wezterm.font_with_fallback {
   'Cascadia Code',
+  'Symbols Nerd Font Mono',
   'JetBrains Mono', -- common fallback
   'Menlo',          -- macOS-native fallback
 }
