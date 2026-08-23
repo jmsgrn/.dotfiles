@@ -1,11 +1,22 @@
 {
   "model": "opus",
-  "effortLevel": "xhigh",
-  "theme": "dark",
-  "agentPushNotifEnabled": true,
   "statusLine": {
     "type": "command",
     "command": "~/.claude/statusline.sh",
     "padding": 0
-  }
+  },
+  "enabledPlugins": {
+    "remotion@remotion": true
+  },
+  "extraKnownMarketplaces": {
+    "remotion": {
+      "source": {
+        "source": "github",
+        "repo": "remotion-dev/claude-code-plugin"
+      }
+    }
+  },
+  "effortLevel": "high",
+  "theme": "dark",
+  "agentPushNotifEnabled": true
 }
